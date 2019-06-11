@@ -16,6 +16,18 @@ module.exports = {
     receivePackage(ws, data) {
         const pkg = JSON.parse(data);
         switch (pkg.type) {
+            case 'RegisterPackage':
+                {
+                    const RegisterPackage = {
+                        type: pkg.type,
+                        message: {
+                            serverName: this.to,
+                            pkgNames: ['Login', 'Logout'],
+                        },
+                    };
+                    this.sendResponse(ws, RegisterPackage);
+                }
+                break;
             case 'Login':
                 {
                     const userName = pkg.message.userName;
@@ -26,7 +38,9 @@ module.exports = {
                             from: this.to,
                             to: pkg.from,
                             message: user,
+                            clientID: pkg.clientID,
                         };
+
                         this.sendResponse(ws, Login);
                     }
                     else {
@@ -40,6 +54,7 @@ module.exports = {
                                     from: this.to,
                                     to: pkg.from,
                                     message: user,
+                                    clientID: pkg.clientID,
                                 };
                                 this.sendResponse(ws, Login);
                             }
@@ -56,6 +71,7 @@ module.exports = {
                                         from: this.to,
                                         to: pkg.from,
                                         message: user,
+                                        clientID: pkg.clientID,
                                     };
                                     this.sendResponse(ws, Login);
                                 });
@@ -75,6 +91,7 @@ module.exports = {
                         from: this.to,
                         to: pkg.from,
                         message: user,
+                        clientID: pkg.clientID,
                     };
                     this.sendResponse(ws, Logout);
                 }
