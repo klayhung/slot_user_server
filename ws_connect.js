@@ -2,7 +2,7 @@ const WebSocket = require('ws');
 const userManage = require('./user_manage');
 
 const wss = new WebSocket.Server({
-    port: 8081,
+    port: 8082,
 });
 
 const connections = {};
@@ -28,6 +28,6 @@ wss.on('connection', (ws) => {
     ws.on('message', (data) => {
         console.log(`ws id: ${ws.id}`);
         console.log(`server rcv data: ${data}`);
-        userManage.receivePackage(ws.id, data);
+        userManage.receivePackage(ws, data);
     });
 });
