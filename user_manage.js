@@ -5,14 +5,18 @@ module.exports = {
     usersMap: new Map(),
     to: 'User',
 
+    /**
+     * User Manage 初始
+     */
     init() {
         dbConnection.connect();
     },
 
-    getUser(userName) {
-        return this.usersMap.get(userName);
-    },
-
+    /**
+     * 接收訊息
+     * @param {Object} ws 單一 websocket 連線物件
+     * @param {JSON} data 封包
+     */
     receivePackage(ws, data) {
         const pkg = JSON.parse(data);
         switch (pkg.type) {
@@ -108,6 +112,11 @@ module.exports = {
         }
     },
 
+    /**
+     * 傳送訊息
+     * @param {Object} ws 單一 websocket 連線物件
+     * @param {JSON} data 封包
+     */
     sendResponse(ws, data) {
         console.log(`server send data: ${JSON.stringify(data)}`);
         ws.send(JSON.stringify(data));
