@@ -37,7 +37,7 @@ module.exports = {
                             type: pkg.type,
                             from: this.to,
                             to: pkg.from,
-                            message: user,
+                            message: { user },
                             clientID: pkg.clientID,
                         };
 
@@ -53,7 +53,7 @@ module.exports = {
                                     type: pkg.type,
                                     from: this.to,
                                     to: pkg.from,
-                                    message: user,
+                                    message: { user },
                                     clientID: pkg.clientID,
                                 };
                                 this.sendResponse(ws, Login);
@@ -70,7 +70,7 @@ module.exports = {
                                         type: pkg.type,
                                         from: this.to,
                                         to: pkg.from,
-                                        message: user,
+                                        message: { user },
                                         clientID: pkg.clientID,
                                     };
                                     this.sendResponse(ws, Login);
@@ -81,19 +81,26 @@ module.exports = {
                 }
                 break;
             case 'Logout':
-                {
+                if (pkg.from === 'Client') {
                     const user = pkg.message;
+                    const LeaveGame = {
+                        type: pkg.type,
+                        from: this.to,
+                        to: 'Game',
+                        message: { user },
+                        clientID: pkg.clientID,
+                    };
+                    this.sendResponse(ws, LeaveGame);
+                }
+                else if (pkg.from === 'Game') {
+                    const user = pkg.message.user;
                     const updateUserToSql = `UPDATE User SET userPoint = ${user.userPoint} WHERE userID = ${user.userID}`;
                     console.log(`updateUserToSql: ${updateUserToSql}`);
                     dbConnection.query(updateUserToSql, () => {});
-                    const Logout = {
-                        type: pkg.type,
-                        from: this.to,
-                        to: pkg.from,
-                        message: user,
-                        clientID: pkg.clientID,
-                    };
-                    this.sendResponse(ws, Logout);
+
+                    if (this.usersMap.has(user.userName)) {
+                        this.usersMap.set(user.userName, user);
+                    }
                 }
                 break;
             default:
